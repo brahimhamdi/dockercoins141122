@@ -28,7 +28,7 @@ spec:
   spec:
    containers:
    - name: worker
-     image: brahimhamdi/worker:2.0
+     image: brahimhamdi/worker
 ---
 apiVersion: apps/v1
 kind: DaemonSet

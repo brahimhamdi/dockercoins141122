@@ -28,7 +28,7 @@ spec:
   spec:
    containers:
    - name: worker
-     image: brahimhamdi/worker
+     image: jil22400/dockercoins:25
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -50,7 +50,7 @@ spec:
   spec:
    containers:
    - name: rng
-     image: brahimhamdi/rng:1.0
+     image: asabella/rng
 ---
 apiVersion: v1
 kind: Service
@@ -85,7 +85,7 @@ spec:
   spec:
    containers:
    - name: hasher
-     image: brahimhamdi/hasher:1.0
+     image: alexisbonnet1997/hasher
      resources:
       requests:
        memory: "300Mi"

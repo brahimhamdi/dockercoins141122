@@ -19,8 +19,8 @@ pipeline {
         stage('BuildImgWorkerDocker') {
             steps {
                 script {
-                    img = docker.build("brahimhamdi/worker:${env.BUILD_ID}")
-                    img = docker.build("brahimhamdi/worker:latest")
+                    img = docker.build("brahimhamdi/worker:${env.BUILD_ID}", "./worker")
+                    img = docker.build("brahimhamdi/worker:latest", "./worker")
                     }
                 }
         }
@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     sh "docker run -d --rm --name worker-UnitTest brahimhamdi/worker:${env.BUILD_ID}"
-                    sh "sleep 120"
+                    sh "sleep 60"
                     sh "docker stop worker-UnitTest"
                         }
                 }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     sh "docker-compose up -d"
-                    sh "sleep 120"
+                    sh "sleep 60"
                     sh "docker-compose down"
                         }
                 }
@@ -79,3 +79,4 @@ pipeline {
 
         }
 }
+

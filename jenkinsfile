@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+    
+    tools {
+     maven "M3"
+     'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
+         }
+    environment {
+      img = ''
+       registryCredential='dockerhub'
+        }
+    stages {
+       stage('GitClone') {
+            steps {
+                git 'https://github.com/brahimhamdi/dockercoins141122'
+                }
+            }
+
+        stage('BuildImgWorkerDocker') {
+            steps {
+                script {
+                    img = docker.build("brahimhamdi/worker:${env.BUILD_ID}")
+                    img = docker.build("brahimhamdi/worker:latest")
+                    }
+                }
+        }
+
+        stage('TestUnitWorker') {
+            steps {
+                script {
+                    sh "docker run -d --rm --name worker-UnitTest brahimhamdi/worker:${env.BUILD_ID}"
+                    sh "sleep 120"
+                    sh "docker stop worker-UnitTest"
+                        }
+                }
+            }
+            
+        stage('TestIntegrationWorker') {
+            steps {
+                script {
+                    sh "docker-compose up -d"
+                    sh "sleep 120"
+                    sh "docker-compose down"
+                        }
+                }
+            }
+
+        stage('PushImgWorkerDocker') {
+            steps {
+                script {
+                         docker.withRegistry('',registryCredential) {
+                         img.push()
+                         }
+                     }
+                }
+            }
+
+  //      stage('Réinitialiser Cluster k8s') {
+//            steps {
+ //               script {
+  //                       sh 'scp -r ansible-plays/k8s-cluster vagrant@192.168.201.10:/tmp/'            
+//                         sh 'ssh vagrant@192.168.201.10 "ansible-playbook /tmp/k8s-cluster/reset-playbook.yml"'
+ //                        sh 'ssh vagrant@192.168.201.10 "ansible-playbook /tmp/k8s-cluster/all-playbook.yml"'
+  //                       sh 'ssh vagrant@192.168.201.10 "ansible-playbook /tmp/k8s-cluster/master-playbook.yml"'
+//                         sh 'ssh vagrant@192.168.201.10 "ansible-playbook /tmp/k8s-cluster/node-playbook.yml"'
+ //                        }
+  //                   }
+//                }
+
+        stage('DeployProd_K8s') {
+            steps {
+                script {
+                         sh 'scp ansible-plays/dockercoins-playbook.yml vagrant@192.168.201.10:/tmp/'    
+                         sh 'scp k8s-manifest/dockercoins-k8s.yml vagrant@192.168.201.10:/tmp/'            
+                         sh 'ssh vagrant@192.168.201.10 "ansible-playbook /tmp/dockercoins-playbook.yml"'
+                         }
+                     }
+                }
+
+        }
+}

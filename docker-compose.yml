@@ -1,0 +1,15 @@
+version: "3"
+services:
+  worker:
+    image: worker
+    build: ./worker
+  rng:
+    image: brahimhamdi/rng:1.0
+  hasher:
+    image: brahimhadmi/hasher:1.0
+  webui:
+    image: brahimhamdi/webui:1.0
+    ports:
+      - "8000:80"
+  redis:
+    image: redis

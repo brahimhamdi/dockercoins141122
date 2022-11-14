@@ -31,7 +31,7 @@ spec:
      image: brahimhamdi/worker
 ---
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
  name: rng
  namespace: dockercoins
@@ -39,6 +39,7 @@ metadata:
   app: dockercoins
   tier: rng
 spec:
+ replicas: 1
  selector:
   matchLabels:
    tier: rng
